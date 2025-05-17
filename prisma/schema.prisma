@@ -8,11 +8,18 @@ datasource db {
   url      = env("POSTGRES_URI")
 }
 
+enum FrequencyType {
+  hourly
+  daily
+}
+
 model Subscription {
-  id        String @id @default(uuid())
-  email     String
+  id        String        @id @default(uuid())
+  email     String        @unique
   city      String
-  frequency String
+  frequency FrequencyType
+  confirmed Boolean       @default(false)
+  token     String
 
   @@map("subscription")
 }
