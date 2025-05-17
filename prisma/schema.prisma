@@ -13,4 +13,6 @@ model Subscription {
   email     String
   city      String
   frequency String
+
+  @@map("subscription")
 }
