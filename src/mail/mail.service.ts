@@ -10,13 +10,11 @@ export class MailService {
 
   async sendConfirmation(email: string, token: string) {
     const confirmUrl = `${process.env.APP_URL}/confirm/${token}`;
-    const unsubscribeUrl = `${process.env.APP_URL}/unsubscribe/${token}`;
     await this.mailerService.sendMail({
       to: email,
       subject: 'Confirm your subscription',
       html: `
             <p>Click here to confirm: <a href="${confirmUrl}">${confirmUrl}</a></p>
-            <p>Click here to unsubscribe: <a href="${unsubscribeUrl}">${unsubscribeUrl}</p>
             `,
     });
   }
@@ -24,9 +22,11 @@ export class MailService {
   async sendWeather(
     email: string,
     city: string,
+    token: string,
     weather: WeatherSummaryDto,
     frequency: FrequencyType,
   ) {
+    const unsubscribeUrl = `${process.env.APP_URL}/unsubscribe/${token}`;
     await this.mailerService.sendMail({
       to: email,
       subject: `${frequency === FrequencyType.hourly ? 'Hourly' : 'Daily'} Weather Update`,
@@ -34,6 +34,7 @@ export class MailService {
         <h2>Weather in ${city}</h2>
         <p>${weather.description}, ${weather.temperature}°C</p>
         <p>Humidity: ${weather.humidity}%</p>
+        <p>Click here to unsubscribe: <a href="${unsubscribeUrl}">${unsubscribeUrl}</p>
       `,
     });
   }

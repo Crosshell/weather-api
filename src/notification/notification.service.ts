@@ -19,13 +19,14 @@ export class NotificationService {
       await this.subscriptionService.findHourlySubscriptions();
 
     await Promise.allSettled(
-      hourlySubscriptions.map(async ({ email, city }) => {
+      hourlySubscriptions.map(async ({ email, city, token }) => {
         const weather: WeatherSummaryDto =
           await this.weatherService.getCurrent(city);
 
         await this.mailService.sendWeather(
           email,
           city,
+          token,
           weather,
           FrequencyType.hourly,
         );
@@ -39,13 +40,14 @@ export class NotificationService {
       await this.subscriptionService.findDailySubscriptions();
 
     await Promise.allSettled(
-      dailySubscriptions.map(async ({ email, city }) => {
+      dailySubscriptions.map(async ({ email, city, token }) => {
         const weather: WeatherSummaryDto =
           await this.weatherService.getCurrent(city);
 
         await this.mailService.sendWeather(
           email,
           city,
+          token,
           weather,
           FrequencyType.daily,
         );
