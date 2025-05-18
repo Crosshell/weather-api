@@ -19,7 +19,7 @@ model Subscription {
   city      String
   frequency FrequencyType
   confirmed Boolean       @default(false)
-  token     String
+  token     String        @unique
 
   @@map("subscription")
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { SubscribeDto } from './dto/subscribe.dto';
 
@@ -11,6 +11,11 @@ export class SubscriptionController {
     @Body() createSubscriptionDto: SubscribeDto,
   ): Promise<string> {
     return this.subscriptionService.subscribe(createSubscriptionDto);
+  }
+
+  @Get('confirm/:token')
+  async confirm(@Param('token') token: string): Promise<string> {
+    return this.subscriptionService.confirm(token);
   }
 
   /*@Get('unsubscribe/:token')

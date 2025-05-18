@@ -1,9 +1,15 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SubscribeDto } from './dto/subscribe.dto';
 import { PrismaService } from '../prisma.service';
 import { WeatherService } from 'src/weather/weather.service';
 import { MailService } from '../mail/mail.service';
 import * as uuid from 'uuid';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class SubscriptionService {
@@ -38,6 +44,32 @@ export class SubscriptionService {
       token,
     );
     return 'Subscription successful. Confirmation email sent.';
+  }
+
+  async confirm(token: string): Promise<string> {
+    if (!isUUID(token)) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    const subscription = await this.prismaService.subscription.findUnique({
+      where: {
+        token,
+      },
+    });
+    if (!subscription) {
+      throw new NotFoundException('Token not found');
+    }
+
+    await this.prismaService.subscription.update({
+      where: {
+        token,
+      },
+      data: {
+        confirmed: true,
+      },
+    });
+
+    return 'Subscription confirmed successfully';
   }
 
   //async unsubscribe(token: string) {}

@@ -8,7 +8,6 @@ const port = process.env.APP_PORT ?? 3006;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new WeatherApiExceptionFilter());
 
