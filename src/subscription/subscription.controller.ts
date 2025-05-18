@@ -18,8 +18,8 @@ export class SubscriptionController {
     return this.subscriptionService.confirm(token);
   }
 
-  /*@Get('unsubscribe/:token')
-  unsubscribe(@Param('token') token: string) {
+  @Get('unsubscribe/:token')
+  async unsubscribe(@Param('token') token: string) {
     return this.subscriptionService.unsubscribe(token);
-  }*/
+  }
 }

@@ -72,5 +72,25 @@ export class SubscriptionService {
     return 'Subscription confirmed successfully';
   }
 
-  //async unsubscribe(token: string) {}
+  async unsubscribe(token: string) {
+    if (!isUUID(token)) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    const subscription = await this.prismaService.subscription.findUnique({
+      where: {
+        token,
+      },
+    });
+    if (!subscription) {
+      throw new NotFoundException('Token not found');
+    }
+
+    await this.prismaService.subscription.delete({
+      where: {
+        token,
+      },
+    });
+    return 'Unsubscribed successfully';
+  }
 }

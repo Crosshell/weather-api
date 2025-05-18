@@ -7,12 +7,16 @@ export class MailService {
   constructor(private mailerService: MailerService) {}
 
   async sendConfirmationEmail(email: string, token: string) {
-    const url = `${process.env.APP_URL}/confirm/${token}`;
+    const confirmUrl = `${process.env.APP_URL}/confirm/${token}`;
+    const unsubscribeUrl = `${process.env.APP_URL}/unsubscribe/${token}`;
     await this.mailerService.sendMail({
       to: email,
       subject: 'Confirm your subscription',
       template: 'confirmation',
-      html: `<p>Click here: <a href="${url}">${url}</a></p>`,
+      html: `
+            <p>Click here to confirm: <a href="${confirmUrl}">${confirmUrl}</a></p>
+            <p>Click here to unsubscribe: <a href="${unsubscribeUrl}">${unsubscribeUrl}</p>
+            `,
     });
   }
 }
