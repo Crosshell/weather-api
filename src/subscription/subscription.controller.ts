@@ -19,7 +19,7 @@ export class SubscriptionController {
   }
 
   @Get('unsubscribe/:token')
-  async unsubscribe(@Param('token') token: string) {
+  async unsubscribe(@Param('token') token: string): Promise<string> {
     return this.subscriptionService.unsubscribe(token);
   }
 }

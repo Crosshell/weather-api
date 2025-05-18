@@ -10,6 +10,7 @@ import { WeatherService } from 'src/weather/weather.service';
 import { MailService } from '../mail/mail.service';
 import * as uuid from 'uuid';
 import { isUUID } from 'class-validator';
+import { FrequencyType, Subscription } from 'generated/prisma';
 
 @Injectable()
 export class SubscriptionService {
@@ -39,10 +40,7 @@ export class SubscriptionService {
       },
     });
 
-    await this.mailService.sendConfirmationEmail(
-      createSubscriptionDto.email,
-      token,
-    );
+    await this.mailService.sendConfirmation(createSubscriptionDto.email, token);
     return 'Subscription successful. Confirmation email sent.';
   }
 
@@ -72,7 +70,7 @@ export class SubscriptionService {
     return 'Subscription confirmed successfully';
   }
 
-  async unsubscribe(token: string) {
+  async unsubscribe(token: string): Promise<string> {
     if (!isUUID(token)) {
       throw new BadRequestException('Invalid token');
     }
@@ -92,5 +90,23 @@ export class SubscriptionService {
       },
     });
     return 'Unsubscribed successfully';
+  }
+
+  async findHourlySubscriptions(): Promise<Subscription[]> {
+    return this.prismaService.subscription.findMany({
+      where: {
+        confirmed: true,
+        frequency: FrequencyType.hourly,
+      },
+    });
+  }
+
+  async findDailySubscriptions(): Promise<Subscription[]> {
+    return this.prismaService.subscription.findMany({
+      where: {
+        confirmed: true,
+        frequency: FrequencyType.daily,
+      },
+    });
   }
 }

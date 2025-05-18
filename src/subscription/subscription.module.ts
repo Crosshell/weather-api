@@ -3,11 +3,12 @@ import { SubscriptionController } from './subscription.controller';
 import { WeatherModule } from '../weather/weather.module';
 import { SubscriptionService } from './subscription.service';
 import { PrismaService } from '../prisma.service';
-import { MailService } from '../mail/mail.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-  imports: [WeatherModule],
+  imports: [WeatherModule, MailModule],
   controllers: [SubscriptionController],
-  providers: [SubscriptionService, PrismaService, MailService],
+  providers: [SubscriptionService, PrismaService],
+  exports: [SubscriptionService],
 })
 export class SubscriptionModule {}
