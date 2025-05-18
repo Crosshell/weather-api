@@ -3,6 +3,7 @@ import {
   Catch,
   ArgumentsHost,
   HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AxiosError } from 'axios';
@@ -13,14 +14,13 @@ export class WeatherApiExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    let statusCode =
+    const statusCode =
       exception.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
 
-    let description = 'Weather API error';
+    const description = 'Weather API error';
 
     if (statusCode === 400) {
-      description = 'City not found';
-      statusCode = 404;
+      throw new NotFoundException('City not found');
     }
 
     response.status(statusCode).json({
