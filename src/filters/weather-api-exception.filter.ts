@@ -13,15 +13,14 @@ export class WeatherApiExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    const statusCode =
+    let statusCode =
       exception.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
 
     let description = 'Weather API error';
 
     if (statusCode === 400) {
-      description = 'Invalid request';
-    } else if (statusCode === 404) {
       description = 'City not found';
+      statusCode = 404;
     }
 
     response.status(statusCode).json({

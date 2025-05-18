@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { WeatherApiConfig } from '../config/weather.config';
@@ -13,6 +13,10 @@ export class WeatherService {
     private weatherApiConfig: WeatherApiConfig,
   ) {}
   async getCurrent(city: string): Promise<WeatherSummaryDto> {
+    if (!city) {
+      throw new BadRequestException('Invalid request');
+    }
+
     const key = this.weatherApiConfig.key;
     const baseUrl = this.weatherApiConfig.baseUrl;
     const url = `${baseUrl}/current.json?key=${key}&q=${city}&aqi=no`;
