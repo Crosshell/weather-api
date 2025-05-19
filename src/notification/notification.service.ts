@@ -16,7 +16,9 @@ export class NotificationService {
   @Cron('0 * * * *')
   async sendHourlyWeather() {
     const hourlySubscriptions =
-      await this.subscriptionService.findHourlySubscriptions();
+      await this.subscriptionService.findSubscriptionsByFrequency(
+        FrequencyType.hourly,
+      );
 
     await Promise.allSettled(
       hourlySubscriptions.map(async ({ email, city, token }) => {
@@ -37,7 +39,9 @@ export class NotificationService {
   @Cron('0 0 * * *')
   async sendDailyWeather() {
     const dailySubscriptions =
-      await this.subscriptionService.findDailySubscriptions();
+      await this.subscriptionService.findSubscriptionsByFrequency(
+        FrequencyType.daily,
+      );
 
     await Promise.allSettled(
       dailySubscriptions.map(async ({ email, city, token }) => {

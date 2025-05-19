@@ -7,10 +7,8 @@ export class SubscriptionController {
   constructor(private subscriptionService: SubscriptionService) {}
 
   @Post('subscribe')
-  async subscribe(
-    @Body() createSubscriptionDto: SubscribeDto,
-  ): Promise<string> {
-    return this.subscriptionService.subscribe(createSubscriptionDto);
+  async subscribe(@Body() subscribeDto: SubscribeDto): Promise<string> {
+    return this.subscriptionService.subscribe(subscribeDto);
   }
 
   @Get('confirm/:token')

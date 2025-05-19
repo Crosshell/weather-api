@@ -19,10 +19,10 @@ export class SubscriptionService {
     private weatherService: WeatherService,
     private mailService: MailService,
   ) {}
-  async subscribe(createSubscriptionDto: SubscribeDto): Promise<string> {
+  async subscribe(subscribeDto: SubscribeDto): Promise<string> {
     const subscription = await this.prismaService.subscription.findUnique({
       where: {
-        email: createSubscriptionDto.email,
+        email: subscribeDto.email,
       },
     });
 
@@ -30,17 +30,17 @@ export class SubscriptionService {
       throw new ConflictException('Email already subscribed');
     }
 
-    await this.weatherService.getCurrent(createSubscriptionDto.city);
+    await this.weatherService.getCurrent(subscribeDto.city);
 
     const token = uuid.v4();
     await this.prismaService.subscription.create({
       data: {
-        ...createSubscriptionDto,
+        ...subscribeDto,
         token,
       },
     });
 
-    await this.mailService.sendConfirmation(createSubscriptionDto.email, token);
+    await this.mailService.sendConfirmation(subscribeDto.email, token);
     return 'Subscription successful. Confirmation email sent.';
   }
 
@@ -92,20 +92,13 @@ export class SubscriptionService {
     return 'Unsubscribed successfully';
   }
 
-  async findHourlySubscriptions(): Promise<Subscription[]> {
+  async findSubscriptionsByFrequency(
+    frequency: FrequencyType,
+  ): Promise<Subscription[]> {
     return this.prismaService.subscription.findMany({
       where: {
         confirmed: true,
-        frequency: FrequencyType.hourly,
-      },
-    });
-  }
-
-  async findDailySubscriptions(): Promise<Subscription[]> {
-    return this.prismaService.subscription.findMany({
-      where: {
-        confirmed: true,
-        frequency: FrequencyType.daily,
+        frequency,
       },
     });
   }
