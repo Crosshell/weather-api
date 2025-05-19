@@ -1,99 +1,143 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Weather API Subscription Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS application that allows users to subscribe to weather updates for a specific city via email. Users can choose the frequency of updates (hourly or daily) and manage their subscriptions.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of Contents
 
-## Description
+- [Features](#Features)
+- [Technologies](#Technologies)
+- [Environment Variables](#Environment-Variables)
+- [Installation](#Installation)
+- [Running the App](#Running-the-App)
+- [API Endpoints](#API-Endpoints)
+- [Data Model](#Data-Model)
+- [Cron Jobs](#Cron-Jobs)
+- [Author](#Author)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## Features
 
-```bash
-$ npm install
+- Subscribe to weather updates by email
+- Confirm subscriptions via email link
+- Unsubscribe using a secure token
+- Get current weather via API
+- Scheduled email notifications (hourly/daily)
+- Weather data via [WeatherAPI.com](https://www.weatherapi.com/)
+- Email delivery using SMTP (Gmail)
+- PostgreSQL database (via Prisma)
+
+## Technologies
+
+- <b>Node.js</b> + NestJS
+- <b>PostgreSQL</b> with <b>Prisma ORM</b>
+- <b>WeatherAPI</b> for weather data
+- <b>Nodemailer</b> via `@nestjs-modules/mailer`
+- <b>Cron jobs</b> using `@nestjs/schedule`
+
+## Environment Variables
+Create a `.env` file with the following structure:
+
+```dotenv
+# Weather API
+WEATHER_API_KEY=
+WEATHER_API_BASE_URL=
+
+# App Config
+APP_PROTOCOL=
+APP_HOST=
+APP_PORT=
+APP_URL=
+
+# PostgreSQL
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_HOST=
+POSTGRES_PORT=
+POSTGRES_DATABASE=
+POSTGRES_URI=
+
+# Email
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USER=
+MAIL_PASS=
 ```
 
-## Compile and run the project
-
+## Installation
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/Crosshell/weather-api
+cd weather-api
+npm install
 ```
 
-## Run tests
-
+## Running the App
 ```bash
-# unit tests
-$ npm run test
+# Development
+npm run start:dev
 
-# e2e tests
-$ npm run test:e2e
+# Production
+npm run build
+npm run start:prod
 
-# test coverage
-$ npm run test:cov
+```
+Ensure PostgreSQL is running and the database specified in your `.env` is created
+
+### Prisma
+```bash
+npx prisma generate
+npx prisma migrate dev --name init
 ```
 
-## Deployment
+## API Endpoints
+### Weather
+- <b>GET</b> `/weather?city={city}`
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Returns current weather for the provided city
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Subscription
+- <b>POST</b> `/subscribe`
 
-```bash
-$ npm install -g mau
-$ mau deploy
+Subscribes a user to weather updates
+
+<b>Body:</b>
+```json
+{
+  "email": "user@example.com",
+  "city": "London",
+  "frequency": "hourly"
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- <b>GET</b> `/confirm/:token`
 
-## Resources
+Confirms the subscription using a token
 
-Check out a few resources that may come in handy when working with NestJS:
+- <b>GET</b> `/unsubscribe/:token`
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Unsubscribes the user using a token
 
-## Support
+## Data Model
+```prisma
+enum FrequencyType {
+  hourly
+  daily
+}
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+model Subscription {
+  id        String        @id @default(uuid())
+  email     String        @unique
+  city      String
+  frequency FrequencyType
+  confirmed Boolean       @default(false)
+  token     String        @unique
+}
+```
 
-## Stay in touch
+## Cron Jobs
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- <b>Hourly Email:</b> Runs every hour (`0 * * * *`)
+- <b>Daily Email:</b> Runs daily at midnight (`0 0 * * *`)
 
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Author
+- GitHub: [Crosshell](https://github.com/Crosshell)
