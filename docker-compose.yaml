@@ -15,6 +15,19 @@ services:
       POSTGRES_HOST: database
     restart: unless-stopped
 
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: database
+    command: npm test
+
   database:
     image: postgres:16.0
     environment:
